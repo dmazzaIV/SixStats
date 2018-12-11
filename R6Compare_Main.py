@@ -21,7 +21,15 @@ def login():
 	login_button = driver.find_element_by_class_name('rs-atom-button')
 	driver.execute_script('arguments[0].click();', login_button)
 
-	login_email = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.ID,'AuthEmail')))
+	iframe = driver.find_element_by_tag_name('iframe')
+	driver.switch_to.frame(iframe)
+	login_email = driver.find_element_by_id('AuthEmail')
 	login_email.send_keys(login_info[0])
+	login_pwd = driver.find_element_by_id('AuthPassword')
+	login_pwd.send_keys(login_info[1])
+	submit_button = driver.find_element_by_id('LogInButton')
+	submit_button.click()
+
+	driver.switch_to_default_content()
 
 login()
