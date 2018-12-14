@@ -1,6 +1,6 @@
 import shelve
 import os
-import PlayerClass
+#import PlayerClass
 
 #Global Variables
 login_info = {}
