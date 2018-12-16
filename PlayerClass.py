@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup as soup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -7,10 +6,9 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class Player:
 
-	def __init__(self, player_name,login_info):
-		self.login_info = login_info
-		self.driver = webdriver.Chrome()
+	def __init__(self, player_name):
 		#self.login_info = login_info
+		self.driver = webdriver.Chrome()
 		self.player_stats = {}
 
 	def login(self):
@@ -20,30 +18,37 @@ class Player:
 		self.driver.switch_to.frame(iframe)
 
 		login_email = self.driver.find_element_by_id('AuthEmail')
-		login_email.send_keys(self.login_info['email'])
+		login_email.send_keys('')
 		login_pwd = self.driver.find_element_by_id('AuthPassword')
-		login_pwd.send_keys(self.login_info['pwd'])
+		login_pwd.send_keys('')
 		submit_button = self.driver.find_element_by_id('LogInButton')
 		submit_button.click()
 
 		#Switch driver back to main webpage for webscraping
 		self.driver.switch_to.default_content()
 
+
 	def scrapeStats(self):
 
 		self.driver.get('https://game-rainbow6.ubi.com/en-us/uplay/player-statistics/dbd1cef3-d69d-4296-a235-ae8d7d70363f/multiplayer')
 		self.login()
 
-		WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(By.ID, 'section'))
-		stats = self.driver.find_elements_by_class_name('stat-value')
-		if len(stats) > 0:
-			print('found')
-		else:
-			print('fuck this')
+		#Implicit wait for webpage to load after loggining in
+		self.driver.implicitly_wait(5)
 
-		#page_soup = soup(self.driver.page_source, 'html.parser')
+		#Pull all stats from webpage into a list
+		#Particular stat value inedexes' differ if the person is ranked vs unranked so we need 2 cases
+		stats_list = self.driver.find_elements_by_class_name('stat-value')
+		ranked = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[1]/div/div[1]/div/div/div[3]/div/div[2]/div/div[2]/p[2]')
 
-		#stats_list = page_soup.find_all('p', {'class': 'stat-value ng-binding'})
+		if ranked.text == 'NOT RANKED YET.':
+			self.player_stats['Rank'] = 'Not Ranked'
+			self.player_stats['Time Played'] = stats_list[4].text
+			#self.player_stats['Headshot %'] = 
+			self.player_stats['W/L'] = stats_list[11].text
+			self.player_stats['K/D'] = stats_list[12].text
+
+
 
 Dan = Player('Dan')
 Dan.scrapeStats()
