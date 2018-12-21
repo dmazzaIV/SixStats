@@ -22,7 +22,7 @@ class Player:
 		login_pwd = self.driver.find_element_by_id('AuthPassword')
 		login_pwd.send_keys('Frenchtoast#1')
 		submit_button = self.driver.find_element_by_id('LogInButton')
-		submit_button.click()
+		self.driver.execute_script("arguments[0].click();", submit_button)
 
 		#Switch driver back to main webpage for webscraping
 		self.driver.switch_to.default_content()
@@ -55,8 +55,7 @@ class Player:
 		operator_tab = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[2]/div/div[1]/div/div/div/div/article[1]/div[2]/div/div[1]/button')
 		self.driver.execute_script("arguments[0].click();", operator_tab)
 		#wait for operator stats elements to load
-		#TODO: figure out a way to explicitlly wait
-		self.driver.implicitly_wait(2)
+		self.driver.implicitly_wait(10)
 
 		#Get the li tag that is a list of all operators and thier respective stats
 		operator_list_set = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[2]/div/div[1]/div/div/div/div/article[3]/div[1]/div/div/div/nav/ul')

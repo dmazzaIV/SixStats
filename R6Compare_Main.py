@@ -16,6 +16,7 @@ def pullUserDataFromShelf():
         login_info['pwd'] =   user_info['login_info']['pwd']
         user_info.close()
     else:
+    	#runFirstTimeWelcome()
         user_info = shelve.open('User_Info', writeback = True)
         user_email = input('Ubisoft account email: ')
         user_pwd = input('Ubisoft account password: ')
