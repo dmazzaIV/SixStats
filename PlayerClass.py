@@ -10,6 +10,7 @@ class Player:
 		#self.login_info = login_info
 		self.driver = webdriver.Chrome()
 		self.player_stats = {}
+		self.operator_stats = {}
 
 	def login(self):
 
@@ -27,6 +28,8 @@ class Player:
 		#Switch driver back to main webpage for webscraping
 		self.driver.switch_to.default_content()
 
+	def calculateHeadShotPercent(self, total_headshots):
+		total_kills_element = self.driver.find_element_by_xpath
 
 	def scrapePlayerStats(self):
 
@@ -37,34 +40,40 @@ class Player:
 
 		if ranked.text == 'NOT RANKED YET.':
 			self.player_stats['Rank'] = 'Not Ranked'
-			self.player_stats['Time Played'] = stats_list[4].text
-			self.player_stats['Headshots']  = stats_list[8]
-			self.player_stats['W/L'] = stats_list[11].text
-			self.player_stats['K/D'] = stats_list[12].text
-			self.player_stats['Melee Kills'] = stats_list[10].text
+			self.player_stats['Time Played'] = stats_list[4].get_attribute('innerHTML')
+			self.player_stats['Headshots']  = stats_list[8].get_attribute('innerHTML')
+			self.player_stats['W/L'] = stats_list[11].get_attribute('innerHTML')
+			self.player_stats['K/D'] = stats_list[12].get_attribute('innerHTML')
+			self.player_stats['Melee Kills'] = stats_list[10].get_attribute('innerHTML')
 		else:
-			self.player_stats['Rank'] = stats_list[4].text
-			self.player_stats['Time Played'] = stats_list[6].text
-			self.player_stats['Headshots'] = stats_list[10]
-			self.player_stats['W/L'] = stats_list[13].text
-			self.player_stats['K/D'] = stats_list[14].text
-			self.player_stats['Melee Kills'] = stats_list[12].text
+			self.player_stats['Rank'] = stats_list[4].get_attribute('innerHTML')
+			self.player_stats['Time Played'] = stats_list[6].get_attribute('innerHTML')
+			self.player_stats['Headshots'] = stats_list[10].get_attribute('innerHTML')
+			self.player_stats['W/L'] = stats_list[13].get_attribute('innerHTML')
+			self.player_stats['K/D'] = stats_list[14].get_attribute('innerHTML')
+			self.player_stats['Melee Kills'] = stats_list[12].get_attribute('innerHTML')
 
 	def scrapeOperatorStats(self):
-		#navigate to operator tab
-		operator_tab = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[2]/div/div[1]/div/div/div/div/article[1]/div[2]/div/div[1]/button')
-		self.driver.execute_script("arguments[0].click();", operator_tab)
-		#wait for operator stats elements to load
-		self.driver.implicitly_wait(10)
 
 		#Get the li tag that is a list of all operators and thier respective stats
 		operator_list_set = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[2]/div/div[1]/div/div/div/div/article[3]/div[1]/div/div/div/nav/ul')
 		operators = operator_list_set.find_elements_by_tag_name('li')
 
+		#use xpath here because if searching for 'p' tag will return 5 stats and we only want 3
+		#so it takes more writing but I think it's more efficient
 		for operator in operators:
-			operator_stats = operator.find_elements_by_tag_name('p')
-			for stat in operator_stats:
-				print(stat.text)
+			operator_name = operator.find_element_by_xpath('.//div/div[1]/div[1]/div/div[1]/p')
+			operator_time_played = operator.find_element_by_xpath('.//div/div[1]/div[1]/div/div[2]/div/div/p')
+			operator_win_loss = operator.find_element_by_xpath('.//div/div[1]/div[1]/div/div[3]/div/div/p')
+			operator_kill_death = operator.find_element_by_xpath('.//div/div[1]/div[1]/div/div[4]/div/div/p')
+
+			#make a dictionary that will act as the inner dictionary for holding stats in the operator stats dictionary
+			inner_dictionary = {}
+			inner_dictionary['Time Played'] = operator_time_played.get_attribute('innerHTML')
+			inner_dictionary['W/L'] = operator_win_loss.get_attribute('innerHTML')
+			inner_dictionary['K/D'] = operator_kill_death.get_attribute('innerHTML')
+			self.operator_stats[operator_name.get_attribute('innerHTML')] = inner_dictionary
+
 
 	def populateStats(self):
 		
@@ -74,7 +83,7 @@ class Player:
 		#Wait for operator stats button to be clickable
 		#This tells us that the page is fully loaded and we are able to navigate to the operator page when we are done with the player stats
 		WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#section > div > div > div.ng-scope > div > div.player-statistics-tabs.ng-isolate-scope.rs-organism-tabs > div > div > div > div > article.ng-scope.ng-isolate-scope.selected > div.player-statistics-most-used-operator.rs-atom-box > div > div.more-operator-stats.ng-scope > button')))
-		#self.scrapePlayerStats()
+		self.scrapePlayerStats()
 		self.scrapeOperatorStats()
 
 
