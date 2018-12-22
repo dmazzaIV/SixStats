@@ -85,10 +85,63 @@ class Player:
 
 		#Wait for operator stats button to be clickable
 		#This tells us that the page is fully loaded and we are able to navigate to the operator page when we are done with the player stats
-		WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#section > div > div > div.ng-scope > div > div.player-statistics-tabs.ng-isolate-scope.rs-organism-tabs > div > div > div > div > article.ng-scope.ng-isolate-scope.selected > div.player-statistics-most-used-operator.rs-atom-box > div > div.more-operator-stats.ng-scope > button')))
 		self.scrapePlayerStats()
 		self.scrapeOperatorStats()
 
+	
+	#ALL THE GETTER FUNCTIONS ARE DOWN HERE
 
-Dan = Player('Dan')
-Dan.populateStats()
+	#PLAYER GETTERS
+
+	#stored as string returns int
+	def getPlayerRank(self):
+		return int(self.player_stats['Rank'])
+
+	#stored as string returned as string
+	#not really a stat worth comparing so shouldn't need to convert it to an int or float, just something worth displaying
+	def getPlayerTimePlayed(self):
+		return self.player_stats['Time Played']
+
+	#stored as a float returned as a float
+	def getPlayerHeadshotPercentage(self):
+		return self.player_stats['Headshot %']
+
+	#stored as a string returned as a float
+	def getPlayerWinLoss(self):
+		return float(self.player_stats['W/L'])
+
+	#stored as a string returned as a float
+	def getPlayerKillDeath(self):
+		return float(self.player_stats['K/D'])
+
+	#stored as a string returned as an int
+	def getPlayerMeleeKills(self):
+		return int(self.player_stats['Melee Kills'])
+
+	#OPERATOR GETTERS
+
+	#stored as a string returned as a string
+	#might be worth considering writing a function to convert the time to an int in minutes and compare those
+	def getOperatorTimePlayed(self, operator_name)
+		op_name = operator_name.upper()
+		try:
+			return self.operator_stats[op_name]['Time Played']
+		except:
+			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
+
+	#stored as a string returned as float
+	def getOperatorWinLoss(self, operator_name)
+		op_name = operator_name.upper()
+		try:
+			return float(self.operator_stats[op_name]['W/L'])
+		except:
+			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
+
+	#stored as a string returned as a float
+	def getOperatorKillDeath(self, operator_name)
+		op_name = operator_name.upper()
+		try:
+			return float(self.operator_stats[op_name]['K/D'])
+		except:
+			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
+
