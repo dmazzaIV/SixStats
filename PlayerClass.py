@@ -29,7 +29,10 @@ class Player:
 		self.driver.switch_to.default_content()
 
 	def calculateHeadShotPercent(self, total_headshots):
-		total_kills_element = self.driver.find_element_by_xpath
+		total_kills_element = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[2]/div/div[1]/div/div/div/div/article[1]/div[1]/div/div[2]/div[2]/div/ul/li[1]/span[2]')
+		total_kills = total_kills_element.get_attribute('innerHTML')
+
+		return float(total_headshots) / float(total_kills)
 
 	def scrapePlayerStats(self):
 
@@ -41,14 +44,14 @@ class Player:
 		if ranked.text == 'NOT RANKED YET.':
 			self.player_stats['Rank'] = 'Not Ranked'
 			self.player_stats['Time Played'] = stats_list[4].get_attribute('innerHTML')
-			self.player_stats['Headshots']  = stats_list[8].get_attribute('innerHTML')
+			self.player_stats['Headshot %']  = self.calculateHeadShotPercent(stats_list[8].get_attribute('innerHTML'))
 			self.player_stats['W/L'] = stats_list[11].get_attribute('innerHTML')
 			self.player_stats['K/D'] = stats_list[12].get_attribute('innerHTML')
 			self.player_stats['Melee Kills'] = stats_list[10].get_attribute('innerHTML')
 		else:
 			self.player_stats['Rank'] = stats_list[4].get_attribute('innerHTML')
 			self.player_stats['Time Played'] = stats_list[6].get_attribute('innerHTML')
-			self.player_stats['Headshots'] = stats_list[10].get_attribute('innerHTML')
+			self.player_stats['Headshot %']  = self.calculateHeadShotPercent(stats_list[10].get_attribute('innerHTML'))
 			self.player_stats['W/L'] = stats_list[13].get_attribute('innerHTML')
 			self.player_stats['K/D'] = stats_list[14].get_attribute('innerHTML')
 			self.player_stats['Melee Kills'] = stats_list[12].get_attribute('innerHTML')
