@@ -19,9 +19,9 @@ class Player:
 		WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe.ng-scope.ng-isolate-scope.rs-template-uplay-connect")))
 
 		login_email = self.driver.find_element_by_id('AuthEmail')
-		login_email.send_keys('d.mazza830@gmail.com')
+		login_email.send_keys('')
 		login_pwd = self.driver.find_element_by_id('AuthPassword')
-		login_pwd.send_keys('Frenchtoast#1')
+		login_pwd.send_keys('')
 		submit_button = self.driver.find_element_by_id('LogInButton')
 		self.driver.execute_script("arguments[0].click();", submit_button)
 
