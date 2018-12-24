@@ -6,11 +6,16 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class Player:
 
-	def __init__(self, player_name):
-		#self.login_info = login_info
+	def __init__(self, player_name, url, login_info):
+		self.login_info = []
+		self.login_info.append(login_info[0])
+		self.login_info.append(login_info[1])
+		self.url = url
 		self.driver = webdriver.Chrome()
 		self.player_stats = {}
 		self.operator_stats = {}
+
+		self.populateStats()
 
 	def login(self):
 
@@ -80,7 +85,7 @@ class Player:
 
 	def populateStats(self):
 		
-		self.driver.get('https://game-rainbow6.ubi.com/en-us/uplay/player-statistics/b3f64755-8892-47db-aa6c-82929cd29f30/multiplayer')
+		self.driver.get(url)
 		self.login()
 
 		#Wait for operator stats button to be clickable
@@ -122,7 +127,7 @@ class Player:
 
 	#stored as a string returned as a string
 	#might be worth considering writing a function to convert the time to an int in minutes and compare those
-	def getOperatorTimePlayed(self, operator_name)
+	def getOperatorTimePlayed(self, operator_name):
 		op_name = operator_name.upper()
 		try:
 			return self.operator_stats[op_name]['Time Played']
@@ -130,7 +135,7 @@ class Player:
 			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
 
 	#stored as a string returned as float
-	def getOperatorWinLoss(self, operator_name)
+	def getOperatorWinLoss(self, operator_name):
 		op_name = operator_name.upper()
 		try:
 			return float(self.operator_stats[op_name]['W/L'])
@@ -138,7 +143,7 @@ class Player:
 			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
 
 	#stored as a string returned as a float
-	def getOperatorKillDeath(self, operator_name)
+	def getOperatorKillDeath(self, operator_name):
 		op_name = operator_name.upper()
 		try:
 			return float(self.operator_stats[op_name]['K/D'])
