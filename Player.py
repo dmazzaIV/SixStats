@@ -7,9 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 class Player:
 
 	def __init__(self, player_name, url, login_info):
-		self.login_info = []
-		self.login_info.append(login_info[0])
-		self.login_info.append(login_info[1])
+		self.login_info = login_info.copy()
 		self.url = url
 		self.driver = webdriver.Chrome()
 		self.player_stats = {}
@@ -24,9 +22,9 @@ class Player:
 		WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe.ng-scope.ng-isolate-scope.rs-template-uplay-connect")))
 
 		login_email = self.driver.find_element_by_id('AuthEmail')
-		login_email.send_keys('')
+		login_email.send_keys(self.login_info['email'])
 		login_pwd = self.driver.find_element_by_id('AuthPassword')
-		login_pwd.send_keys('')
+		login_pwd.send_keys(self.login_info['pwd'])
 		submit_button = self.driver.find_element_by_id('LogInButton')
 		self.driver.execute_script("arguments[0].click();", submit_button)
 
@@ -85,11 +83,11 @@ class Player:
 
 	def populateStats(self):
 		
-		self.driver.get(url)
+		self.driver.get(self.url)
 		self.login()
 
-		#Wait for operator stats button to be clickable
-		#This tells us that the page is fully loaded and we are able to navigate to the operator page when we are done with the player stats
+		#wait for K/D to be visible, this is an arbitrary choice to just wait for the stats to load
+		WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#section > div > div > div.ng-scope > div > div.player-statistics-tabs.ng-isolate-scope.rs-organism-tabs > div > div > div > div > article.ng-scope.ng-isolate-scope.selected > div.player-statistics-main.rs-atom-box > div > div.statistic-group.overview-hero.ng-scope > div:nth-child(2) > div > div > div.hero-stats > div > div > div.stats > p.stat-value.ng-binding')))
 		self.scrapePlayerStats()
 		self.scrapeOperatorStats()
 

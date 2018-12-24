@@ -1,13 +1,17 @@
 import shelve
 import os
-import PlayerClass as Player
+from Player import Player
 
 #Global Variables
 login_info = {}
 user_links = {}
+scraped_players = {}
 
 def main():
     pullUserDataFromShelf()
+    Dan = Player('Dan' , 'https://game-rainbow6.ubi.com/en-us/uplay/player-statistics/dbd1cef3-d69d-4296-a235-ae8d7d70363f/multiplayer', login_info)
+
+    print(Dan.getPlayerKillDeath())
 
 def pullUserDataFromShelf():
     if os.path.isfile('User_Info.dat'):
