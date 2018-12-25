@@ -14,7 +14,17 @@ scraped_players = {}
 
 def main():
     pullUserDataFromShelf()
-    displayOperatorStats('joe', 'blackbeard')
+    scrapeFavorites()
+
+    func = input('Enter a command: ')
+    command = func.split(' ')
+
+    if len(command) == 1:
+        function_dictionary[command[0].upper()]()
+    elif len(command) == 2:
+        function_dictionary[command[0].upper()](command[1])
+    elif len(command) == 3:
+        function_dictionary[command[0].upper()](command[1],command[2])
 
 def pullUserDataFromShelf():
     if os.path.isfile('User_Info.dat'):
@@ -30,6 +40,7 @@ def pullUserDataFromShelf():
         user_pwd = input('Ubisoft account password: ')
         user_info['login_info'] = {'email' : user_email, 'pwd' : user_pwd}
         user_info['user_links'] = {}
+        user_info['favorite_players'] = {}
         
         login_info['email'] =  user_info['login_info']['email']
         login_info['pwd'] =   user_info['login_info']['pwd']
@@ -46,6 +57,8 @@ def copyDictFromShelf():
     user_info = shelve.open('User_Info')
     for key in user_info['user_links']:
         user_links[key] = user_info['user_links'][key]
+    for key in user_info['favorite_players']:
+        favorite_players[key] = user_info['favorite_players'][key]
     user_info.close()
 
 #checks if a player has already been scraped this session
@@ -65,6 +78,21 @@ def isAlreadyScraped(name):
 def listPlayers():
     for key in user_links:
         print(key)
+
+#adds player to favorites to be scraped on launch
+def addPlayerToFavorites(name):
+    if name in user_links:
+        user_info = sehlve.open('User_Info', writeback = True)
+        favorite_players[name.upper()] = user_links[name.upper()]
+        user_info['favorite_players'][name.upper()] = user_links[name.upper()]
+        user_info.close()
+    else:
+        print(name.upper() + ' is not saved in your list of players')
+
+#scrapes the favorites list and stores them in the scraped players dictionary for this session
+def scrapeFavorites():
+    for key,value in favorite_players.items():
+        scraped_players[key] = Player(value, login_info)
 
 #list the names of all players in the favorites dictionary
 def listFavorites():
@@ -108,5 +136,14 @@ def displayOperatorStats(player_name, operator_name):
         print('Time Played: ' + player.getOperatorTimePlayed(operator_name.upper()))
         print('K/D: ' + str(player.getOperatorKillDeath(operator_name.upper())))
         print('W/L: ' + str(player.getOperatorWinLoss(operator_name.upper())))
+
+
+#dictionary of functions to turn user input into function calls
+function_dictionary = { 'ADD_PLAYER' : addPlayerURL
+                        ,'ADD_FAVORITE' : addPlayerToFavorites
+                        ,'LIST' : listPlayers
+                        ,'FAVORITES' : listFavorites
+                        ,'DISP_STATS' : displayPlayerStats
+                        ,'OP_STATS' : displayOperatorStats}
 
 main()
