@@ -5,6 +5,8 @@ from Player import Player
 #Global Variables
 login_info = {}
 user_links = {}
+#favorite players will be scraped on launch so that you can call these players stats without waiting early on
+favorite_players = {}
 
 #dictionary of players that have already been scraped this session
 #this should save time if the same person is called more than once
@@ -12,6 +14,7 @@ scraped_players = {}
 
 def main():
     pullUserDataFromShelf()
+    displayPlayerStats('joe')
 
 def pullUserDataFromShelf():
     if os.path.isfile('User_Info.dat'):
@@ -50,6 +53,11 @@ def listPlayers():
     for key in user_links:
         print(key)
 
+#list the names of all players in the favorites dictionary
+def listFavorites():
+    for key in favorite_players:
+        print(key)
+
 #add a player to the user_links dictionary
 def addPlayerURL():
     user_info = shelve.open('User_Info', writeback = True)
@@ -64,5 +72,21 @@ def addPlayerURL():
         user_info['user_links'][player_name.upper()] = player_url
         user_links[player_name.upper()] = player_url
     user_info.close()
+
+#desiplays the general player stats
+def displayPlayerStats(name):
+    if name.upper() in scraped_players:
+        player = scraped_players[name.upper()]
+    elif name.upper() not in scraped_players and name.upper() in user_links:
+        player = Player(user_links[name.upper()], login_info)
+    else:
+        print(name.upper() + 'is not saved in your list of players')
+        return None
+
+    print('Rank: ' + str(player.getPlayerRank()))
+    print('Time Played: ' + (player.getPlayerTimePlayed()))
+    print('K/D: ' + str(player.getPlayerKillDeath()))
+    print('W/L: ' + str(player.getPlayerWinLoss()))
+    print('Headshot %: ' + str(player.getPlayerHeadshotPercentage()))
 
 main()

@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -6,10 +7,14 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class Player:
 
-	def __init__(self, player_name, url, login_info):
+	def __init__(self, url, login_info):
 		self.login_info = login_info.copy()
 		self.url = url
-		self.driver = webdriver.Chrome()
+		#make chromedriver headless as we don't need the window to be displayed
+		#also makes it a tad bit faster since it is not loading grpahical elements
+		self.options = Options()
+		self.options.headless = True
+		self.driver = webdriver.Chrome(chrome_options = self.options)
 		self.player_stats = {}
 		self.operator_stats = {}
 
