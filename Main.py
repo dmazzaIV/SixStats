@@ -14,7 +14,7 @@ scraped_players = {}
 
 def main():
     pullUserDataFromShelf()
-    displayPlayerStats('joe')
+    displayOperatorStats('joe', 'blackbeard')
 
 def pullUserDataFromShelf():
     if os.path.isfile('User_Info.dat'):
@@ -48,6 +48,19 @@ def copyDictFromShelf():
         user_links[key] = user_info['user_links'][key]
     user_info.close()
 
+#checks if a player has already been scraped this session
+def isAlreadyScraped(name):
+    if name.upper() in scraped_players:
+        return scraped_players[name.upper()]
+    elif name.upper() not in scraped_players and name.upper() in user_links:
+        player = Player(user_links[name.upper()], login_info)
+        scraped_players[name.upper()] = player
+        return player
+
+    else:
+        print(name.upper() + 'is not saved in your list of players')
+        return None
+
 #list the names of all players in the user_links dictionary
 def listPlayers():
     for key in user_links:
@@ -73,20 +86,27 @@ def addPlayerURL():
         user_links[player_name.upper()] = player_url
     user_info.close()
 
-#desiplays the general player stats
+#displays the general player stats
 def displayPlayerStats(name):
-    if name.upper() in scraped_players:
-        player = scraped_players[name.upper()]
-    elif name.upper() not in scraped_players and name.upper() in user_links:
-        player = Player(user_links[name.upper()], login_info)
-    else:
-        print(name.upper() + 'is not saved in your list of players')
-        return None
 
-    print('Rank: ' + str(player.getPlayerRank()))
-    print('Time Played: ' + (player.getPlayerTimePlayed()))
-    print('K/D: ' + str(player.getPlayerKillDeath()))
-    print('W/L: ' + str(player.getPlayerWinLoss()))
-    print('Headshot %: ' + str(player.getPlayerHeadshotPercentage()))
+    player = isAlreadyScraped(name)
+
+    if player != None:
+        print('Rank: ' + str(player.getPlayerRank()))
+        print('Time Played: ' + (player.getPlayerTimePlayed()))
+        print('K/D: ' + str(player.getPlayerKillDeath()))
+        print('W/L: ' + str(player.getPlayerWinLoss()))
+        headshot_percent_full = str(player.getPlayerHeadshotPercentage())
+        print('Headshot %: ' + headshot_percent_full[2:4] + '%')
+
+def displayOperatorStats(player_name, operator_name):
+
+    player = isAlreadyScraped(player_name)
+
+    if player != None:
+        print(player_name.upper() + '\'S ' + operator_name.upper() + ' STATS:')
+        print('Time Played: ' + player.getOperatorTimePlayed(operator_name.upper()))
+        print('K/D: ' + str(player.getOperatorKillDeath(operator_name.upper())))
+        print('W/L: ' + str(player.getOperatorWinLoss(operator_name.upper())))
 
 main()
