@@ -50,7 +50,7 @@ class Player:
 		ranked = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[1]/div/div[1]/div/div/div[3]/div/div[2]/div/div[2]/p[2]')
 
 		if ranked.text == 'NOT RANKED YET.':
-			self.player_stats['Rank'] = 'Not Ranked'
+			self.player_stats['Rank'] = 'Not Ranked Yet'
 			self.player_stats['Time Played'] = stats_list[4].get_attribute('innerHTML')
 			self.player_stats['Headshot %']  = self.calculateHeadShotPercent(stats_list[8].get_attribute('innerHTML'))
 			self.player_stats['W/L'] = stats_list[11].get_attribute('innerHTML')
@@ -101,9 +101,8 @@ class Player:
 
 	#PLAYER GETTERS
 
-	#stored as string returns int
 	def getPlayerRank(self):
-		return int(self.player_stats['Rank'])
+		return self.player_stats['Rank']
 
 	#stored as string returned as string
 	#not really a stat worth comparing so shouldn't need to convert it to an int or float, just something worth displaying
@@ -116,15 +115,15 @@ class Player:
 
 	#stored as a string returned as a float
 	def getPlayerWinLoss(self):
-		return float(self.player_stats['W/L'])
+		return self.player_stats['W/L']
 
 	#stored as a string returned as a float
 	def getPlayerKillDeath(self):
-		return float(self.player_stats['K/D'])
+		return self.player_stats['K/D']
 
 	#stored as a string returned as an int
 	def getPlayerMeleeKills(self):
-		return int(self.player_stats['Melee Kills'])
+		return self.player_stats['Melee Kills']
 
 	#OPERATOR GETTERS
 
@@ -141,7 +140,7 @@ class Player:
 	def getOperatorWinLoss(self, operator_name):
 		op_name = operator_name.upper()
 		try:
-			return float(self.operator_stats[op_name]['W/L'])
+			return self.operator_stats[op_name]['W/L']
 		except:
 			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
 
@@ -149,7 +148,7 @@ class Player:
 	def getOperatorKillDeath(self, operator_name):
 		op_name = operator_name.upper()
 		try:
-			return float(self.operator_stats[op_name]['K/D'])
+			return self.operator_stats[op_name]['K/D']
 		except:
 			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
 

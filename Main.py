@@ -16,15 +16,20 @@ def main():
     pullUserDataFromShelf()
     scrapeFavorites()
 
-    func = input('Enter a command: ')
-    command = func.split(' ')
+    while 1 == 1:
+        func = input('Enter a command(0 to exit): ')
+        if func == '0':
+            break
 
-    if len(command) == 1:
-        function_dictionary[command[0].upper()]()
-    elif len(command) == 2:
-        function_dictionary[command[0].upper()](command[1])
-    elif len(command) == 3:
-        function_dictionary[command[0].upper()](command[1],command[2])
+        command = func.split(' ')
+        if len(command) == 1:
+            function_dictionary[command[0].upper()]()
+        elif len(command) == 2:
+            function_dictionary[command[0].upper()](command[1])
+        elif len(command) == 3:
+            function_dictionary[command[0].upper()](command[1],command[2])
+        elif len(command) == 4:
+            function_dictionary[command[0].upper()](command[1],command[2],command[3])
 
 def pullUserDataFromShelf():
     if os.path.isfile('User_Info.dat'):
@@ -81,8 +86,8 @@ def listPlayers():
 
 #adds player to favorites to be scraped on launch
 def addPlayerToFavorites(name):
-    if name in user_links:
-        user_info = sehlve.open('User_Info', writeback = True)
+    if name.upper() in user_links:
+        user_info = shelve.open('User_Info', writeback = True)
         favorite_players[name.upper()] = user_links[name.upper()]
         user_info['favorite_players'][name.upper()] = user_links[name.upper()]
         user_info.close()
@@ -120,10 +125,10 @@ def displayPlayerStats(name):
     player = isAlreadyScraped(name)
 
     if player != None:
-        print('Rank: ' + str(player.getPlayerRank()))
+        print('Rank: ' + player.getPlayerRank())
         print('Time Played: ' + (player.getPlayerTimePlayed()))
-        print('K/D: ' + str(player.getPlayerKillDeath()))
-        print('W/L: ' + str(player.getPlayerWinLoss()))
+        print('K/D: ' + player.getPlayerKillDeath())
+        print('W/L: ' + player.getPlayerWinLoss())
         headshot_percent_full = str(player.getPlayerHeadshotPercentage())
         print('Headshot %: ' + headshot_percent_full[2:4] + '%')
 
@@ -134,16 +139,58 @@ def displayOperatorStats(player_name, operator_name):
     if player != None:
         print(player_name.upper() + '\'S ' + operator_name.upper() + ' STATS:')
         print('Time Played: ' + player.getOperatorTimePlayed(operator_name.upper()))
-        print('K/D: ' + str(player.getOperatorKillDeath(operator_name.upper())))
-        print('W/L: ' + str(player.getOperatorWinLoss(operator_name.upper())))
+        print('K/D: ' + player.getOperatorKillDeath(operator_name.upper()))
+        print('W/L: ' + player.getOperatorWinLoss(operator_name.upper()))
+
+def comparePlayers(player_1_name, player_2_name):
+    #load player stats from the dictionary or scrape the players stats if they haven't already been scraped
+    player_1 = isAlreadyScraped(player_1_name)
+    player_2 = isAlreadyScraped(player_2_name)
+
+    print('\t' +player_1_name.upper() + '\t\t' + player_2_name.upper())
+    print('Rank: ' + player_1.getPlayerRank() + '\t' + player_2.getPlayerRank())
+    print('Time Played: ' + player_1.getPlayerTimePlayed() + '\t' + player_2.getPlayerTimePlayed())
+    print('W/L: \t' + player_1.getPlayerWinLoss() + '\t\t' + player_2.getPlayerWinLoss())
+    print('K/D: \t' + player_1.getPlayerKillDeath() + '\t\t' + player_2.getPlayerKillDeath())
+    headshot_percent_full_1 = str(player_1.getPlayerHeadshotPercentage())
+    headshot_percent_full_2 = str(player_2.getPlayerHeadshotPercentage())
+    print('Headshot %: ' + headshot_percent_full_1[2:4] + '% \t' + headshot_percent_full_2[2:4] + '%')
+    print('Melee Kills: ' + player_1.getPlayerMeleeKills() + '\t\t' + player_2.getPlayerMeleeKills())
+
+def compareOperators(player_1_name, player_2_name, operator):
+    #load player stats from the dictionary or scrape the players stats if they haven't already been scraped
+    player_1 = isAlreadyScraped(player_1_name)
+    player_2 = isAlreadyScraped(player_2_name)
+
+    print('\t' +player_1_name.upper() + '\t' + player_2_name.upper())
+    print('Time Played: ' + player_1.getOperatorTimePlayed(operator.upper()) + '\t' + player_2.getOperatorTimePlayed(operator.upper()))
+    print('W/L: ' + player_1.getOperatorWinLoss(operator.upper()) + '\t' + player_2.getOperatorWinLoss(operator.upper()))
+    print('K/D: ' + player_1.getOperatorKillDeath(operator.upper()) + '\t' + player_2.getOperatorKillDeath(operator.upper()))
+
+def commandHelp():
+    print('Commands and arguments are not case senesitive')
+    print('make sure you have spaces between arguments and commands')
+    print('Commands:')
+    print('ADD_PLAYER \'name\'  -adds a player to your saved list of players to scrape and compare')
+    print('ADD_FAVORITE \'name\'  -adds a player to your favorites list, this list will be scraped on launch')
+    print('LIST  -lists all players saved and ready to be scraped')
+    print('FAVORITES  -lists all players in your favorites list')
+    print('DISP_STATS \'player name\'  -displays the general stats for a given player')
+    print('OP_STATS \'player name\' \'operator name\'  -displays the operator specific stats for a given player')
+    print('COMPARE_OP \'player name\' \'player name\' \'operator name\'  -displays the specific operator stats for two given players side by side')
+    print('COMPARE_PLAYERS \'player name\' \'player name\'  -displays the stats for two given players side by side for comparison')
 
 
 #dictionary of functions to turn user input into function calls
-function_dictionary = { 'ADD_PLAYER' : addPlayerURL
+function_dictionary = {  'ADD_PLAYER' : addPlayerURL
                         ,'ADD_FAVORITE' : addPlayerToFavorites
                         ,'LIST' : listPlayers
                         ,'FAVORITES' : listFavorites
                         ,'DISP_STATS' : displayPlayerStats
-                        ,'OP_STATS' : displayOperatorStats}
+                        ,'OP_STATS' : displayOperatorStats
+                        ,'COMPARE_OP' : compareOperators
+                        ,'COMPARE_PLAYERS' : comparePlayers
+                        ,'HELP' : commandHelp
+                        }
 
 main()
