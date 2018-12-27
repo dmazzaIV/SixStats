@@ -17,7 +17,7 @@ def main():
     scrapeFavorites()
 
     while 1 == 1:
-        func = input('Enter a command(0 to exit): ')
+        func = input('Enter a command(type \'help\' for a list of commands, type 0 to exit): ')
         if func == '0':
             break
 
