@@ -1,20 +1,2 @@
-STATS LIST CHEAT SHEET
-___________________________________________________________________________________________________________________________________________
-unranked:                           Ranked:
-0 - null                            0 - null
-1 - null                            1 - null
-2 - Player level                    2 - Player Level
-3 - Player rank(Numerical)          3 - Tier below current rank(Numerical)
-4 - Time played                     4 - Current Rank(numerical)
-5 - matches played                  5 - Tier above current rank(numerical)
-6 - Kill assists                    6 - Time Played
-7 - Revives                         7 - Mathces Played
-8 - Headshots                       8 - Kill assists
-9 - Penetration Kills               9 - Revives
-10 - Melee kills                    10 - Headshots
-11 - W/L ratio                      11 - Penetration Kills
-12 - K/D ratio                      12 - Melee Kills
-13 - Accuracy                       13 - W/L Ratio
-                                    14 - K/D Ratio
-                                    15 - Accuracy
-___________________________________________________________________________________________________________________________________________ 
+SiXStats is a web scraper using Python and Selenium to scrape player stats for use to display or compare with friends. 
+Player login info and the list of urls for players that will be scraped are stored using the 'User_Info' Shelf. On launch the program will pull all relevant information(login info, list of urls, and favorites) into the dictionaries for the current session. A player's stats are not scraped until that player is used in a function such as display stats, where it creates a player object to store all scraped information about that player. I made the decision to not scrape all urls on launch because if you were to have a very long list of player urls it would take forever to scrape them all. That is where the favorites function comes in. The favorites list is scraped on launch so you can pick and choose what people you want ready to go. 
