@@ -5,7 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 class Player:
+
 
 	def __init__(self, url, login_info):
 		self._login_info = login_info.copy()
@@ -17,12 +19,11 @@ class Player:
 		self.driver = webdriver.Chrome(chrome_options = self.options)
 		self.player_stats = {}
 		self.operator_stats = {}
-
 		self._populate_stats()
 
 	def _login(self):
 		"""Logs the driver into https://game-rainbow6.ubi.com for given player link."""
-		#_login pop up is in a different IFrame
+		#login pop up is in a different IFrame
 		#Wait for it to load and switch to it
 		WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe.ng-scope.ng-isolate-scope.rs-template-uplay-connect")))
 
@@ -90,7 +91,6 @@ class Player:
 			inner_dictionary['K/D'] = operator_kill_death.get_attribute('innerHTML')
 			self.operator_stats[operator_name.get_attribute('innerHTML')] = inner_dictionary
 
-
 	def _populate_stats(self):
 		"""Calls the scrapPlayerStats() and _scrape_operator_stats() functions to populate both the player_stats and operator_stats dictionaries."""FH
 		self.driver.get(self.url)
@@ -100,9 +100,6 @@ class Player:
 		WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#section > div > div > div.ng-scope > div > div.player-statistics-tabs.ng-isolate-scope.rs-organism-tabs > div > div > div > div > article.ng-scope.ng-isolate-scope.selected > div.player-statistics-main.rs-atom-box > div > div.statistic-group.overview-hero.ng-scope > div:nth-child(2) > div > div > div.hero-stats > div > div > div.stats > p.stat-value.ng-binding')))
 		self._scrape_player_stats()
 		self._scrape_operator_stats()
-
-	
-	#ALL THE GETTER FUNCTIONS ARE DOWN HERE
 
 	#PLAYER GETTERS
 
