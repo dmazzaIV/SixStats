@@ -21,7 +21,7 @@ class Player:
 		self.populateStats()
 
 	def login(self):
-
+		"""Logs the driver into https://game-rainbow6.ubi.com for given player link."""
 		#login pop up is in a different IFrame
 		#Wait for it to load and switch to it
 		WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe.ng-scope.ng-isolate-scope.rs-template-uplay-connect")))
@@ -37,13 +37,18 @@ class Player:
 		self.driver.switch_to.default_content()
 
 	def calculateHeadShotPercent(self, total_headshots):
+		"""Returns headshot percentage for player as a float (headshots / kills).
+
+		Keyword arguements:
+		total_headshots -- String value from driver for total headshots by that player, will be recast as float
+		"""
 		total_kills_element = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[2]/div/div[1]/div/div/div/div/article[1]/div[1]/div/div[2]/div[2]/div/ul/li[1]/span[2]')
 		total_kills = total_kills_element.get_attribute('innerHTML')
 
 		return float(total_headshots) / float(total_kills)
 
 	def scrapePlayerStats(self):
-
+		"""Driver scrapes general player stats(Rank,Time Played, Headshot %, W/L, K/D, Melee kills) and stores them in player_stats dictionary."""
 		#Pull all stats from webpage into a list
 		#Particular stat value inedexes' differ if the person is ranked vs unranked so we need 2 cases
 		stats_list = self.driver.find_elements_by_class_name('stat-value')
@@ -65,7 +70,7 @@ class Player:
 			self.player_stats['Melee Kills'] = stats_list[12].get_attribute('innerHTML')
 
 	def scrapeOperatorStats(self):
-
+		"""Driver scrapes stats for all the player's operators(Name,Time Played, W/L, K/D) and stores them in operator_stats dictionary."""
 		#Get the li tag that is a list of all operators and thier respective stats
 		operator_list_set = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[2]/div/div[1]/div/div/div/div/article[3]/div[1]/div/div/div/nav/ul')
 		operators = operator_list_set.find_elements_by_tag_name('li')
@@ -87,7 +92,7 @@ class Player:
 
 
 	def populateStats(self):
-		
+		"""Calls the scrapPlayerStats() and scrapeOperatorStats() functions to populate both the player_stats and operator_stats dictionaries."""
 		self.driver.get(self.url)
 		self.login()
 
@@ -102,53 +107,52 @@ class Player:
 	#PLAYER GETTERS
 
 	def getPlayerRank(self):
+		"""Returns player's rank as string."""
 		return self.player_stats['Rank']
 
-	#stored as string returned as string
-	#not really a stat worth comparing so shouldn't need to convert it to an int or float, just something worth displaying
 	def getPlayerTimePlayed(self):
+		"""Returns player's total time played as string."""
 		return self.player_stats['Time Played']
 
-	#stored as a float returned as a float
 	def getPlayerHeadshotPercentage(self):
+		"""Returns player's headshot % as a float."""
 		return self.player_stats['Headshot %']
 
-	#stored as a string returned as a float
 	def getPlayerWinLoss(self):
+		"""Returns player's W/L as a string."""
 		return self.player_stats['W/L']
 
-	#stored as a string returned as a float
 	def getPlayerKillDeath(self):
+		"""Returns player's K/D as a string."""
 		return self.player_stats['K/D']
 
-	#stored as a string returned as an int
 	def getPlayerMeleeKills(self):
+		"""Returns player's melee kills as a string."""
 		return self.player_stats['Melee Kills']
 
 	#OPERATOR GETTERS
 
-	#stored as a string returned as a string
-	#might be worth considering writing a function to convert the time to an int in minutes and compare those
 	def getOperatorTimePlayed(self, operator_name):
+		"""Returns player's time played for the given operator as a string."""
 		op_name = operator_name.upper()
 		try:
 			return self.operator_stats[op_name]['Time Played']
 		except ValueError:
-			print('{} is not a valid operator, maybe you misspelled the name'.format(op_name))
+			print(f'{op_name} is not a valid operator, maybe you misspelled the name')
 
-	#stored as a string returned as float
 	def getOperatorWinLoss(self, operator_name):
+		"""Returns player's W/L for the given operator as a string."""
 		op_name = operator_name.upper()
 		try:
 			return self.operator_stats[op_name]['W/L']
 		except ValueError:
-			print('{} is not a valid operator, maybe you misspelled the name'.format(op_name))
+			print(f'{op_name} is not a valid operator, maybe you misspelled the name')
 
-	#stored as a string returned as a float
 	def getOperatorKillDeath(self, operator_name):
+		"""Returns player's K/D for the given operator as a string."""
 		op_name = operator_name.upper()
 		try:
 			return self.operator_stats[op_name]['K/D']
 		except ValueError:
-			print('{} is not a valid operator, maybe you misspelled the name'.format(op_name))
+			print(f'{op_name} is not a valid operator, maybe you misspelled the name')
 
