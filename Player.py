@@ -18,7 +18,7 @@ class Player:
 		self.player_stats = {}
 		self.operator_stats = {}
 
-		self.populateStats()
+		self.populate_stats()
 
 	def login(self):
 		"""Logs the driver into https://game-rainbow6.ubi.com for given player link."""
@@ -36,7 +36,7 @@ class Player:
 		#Switch driver back to main webpage for webscraping
 		self.driver.switch_to.default_content()
 
-	def calculateHeadShotPercent(self, total_headshots):
+	def calculate_headshot_percent(self, total_headshots):
 		"""Returns headshot percentage for player as a float (headshots / kills).
 
 		Keyword arguements:
@@ -47,7 +47,7 @@ class Player:
 
 		return float(total_headshots) / float(total_kills)
 
-	def scrapePlayerStats(self):
+	def scrape_player_stats(self):
 		"""Driver scrapes general player stats(Rank,Time Played, Headshot %, W/L, K/D, Melee kills) and stores them in player_stats dictionary."""
 		#Pull all stats from webpage into a list
 		#Particular stat value inedexes' differ if the person is ranked vs unranked so we need 2 cases
@@ -57,19 +57,19 @@ class Player:
 		if ranked.text == 'NOT RANKED YET.':
 			self.player_stats['Rank'] = 'Not Ranked Yet'
 			self.player_stats['Time Played'] = stats_list[4].get_attribute('innerHTML')
-			self.player_stats['Headshot %']  = self.calculateHeadShotPercent(stats_list[8].get_attribute('innerHTML'))
+			self.player_stats['Headshot %']  = self.calculate_headshot_percent(stats_list[8].get_attribute('innerHTML'))
 			self.player_stats['W/L'] = stats_list[11].get_attribute('innerHTML')
 			self.player_stats['K/D'] = stats_list[12].get_attribute('innerHTML')
 			self.player_stats['Melee Kills'] = stats_list[10].get_attribute('innerHTML')
 		else:
 			self.player_stats['Rank'] = stats_list[4].get_attribute('innerHTML')
 			self.player_stats['Time Played'] = stats_list[6].get_attribute('innerHTML')
-			self.player_stats['Headshot %']  = self.calculateHeadShotPercent(stats_list[10].get_attribute('innerHTML'))
+			self.player_stats['Headshot %']  = self.calculate_headshot_percent(stats_list[10].get_attribute('innerHTML'))
 			self.player_stats['W/L'] = stats_list[13].get_attribute('innerHTML')
 			self.player_stats['K/D'] = stats_list[14].get_attribute('innerHTML')
 			self.player_stats['Melee Kills'] = stats_list[12].get_attribute('innerHTML')
 
-	def scrapeOperatorStats(self):
+	def scrape_operator_stats(self):
 		"""Driver scrapes stats for all the player's operators(Name,Time Played, W/L, K/D) and stores them in operator_stats dictionary."""
 		#Get the li tag that is a list of all operators and thier respective stats
 		operator_list_set = self.driver.find_element_by_xpath('//*[@id="section"]/div/div/div[2]/div/div[1]/div/div/div/div/article[3]/div[1]/div/div/div/nav/ul')
@@ -91,48 +91,48 @@ class Player:
 			self.operator_stats[operator_name.get_attribute('innerHTML')] = inner_dictionary
 
 
-	def populateStats(self):
-		"""Calls the scrapPlayerStats() and scrapeOperatorStats() functions to populate both the player_stats and operator_stats dictionaries."""
+	def populate_stats(self):
+		"""Calls the scrapPlayerStats() and scrape_operator_stats() functions to populate both the player_stats and operator_stats dictionaries."""FH
 		self.driver.get(self.url)
 		self.login()
 
 		#wait for K/D to be visible, this is an arbitrary choice to just wait for the stats to load
 		WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#section > div > div > div.ng-scope > div > div.player-statistics-tabs.ng-isolate-scope.rs-organism-tabs > div > div > div > div > article.ng-scope.ng-isolate-scope.selected > div.player-statistics-main.rs-atom-box > div > div.statistic-group.overview-hero.ng-scope > div:nth-child(2) > div > div > div.hero-stats > div > div > div.stats > p.stat-value.ng-binding')))
-		self.scrapePlayerStats()
-		self.scrapeOperatorStats()
+		self.scrape_player_stats()
+		self.scrape_operator_stats()
 
 	
 	#ALL THE GETTER FUNCTIONS ARE DOWN HERE
 
 	#PLAYER GETTERS
 
-	def getPlayerRank(self):
+	def get_player_rank(self):
 		"""Returns player's rank as string."""
 		return self.player_stats['Rank']
 
-	def getPlayerTimePlayed(self):
+	def get_player_time_played(self):
 		"""Returns player's total time played as string."""
 		return self.player_stats['Time Played']
 
-	def getPlayerHeadshotPercentage(self):
+	def get_player_headshot_percentage(self):
 		"""Returns player's headshot % as a float."""
 		return self.player_stats['Headshot %']
 
-	def getPlayerWinLoss(self):
+	def get_player_win_loss(self):
 		"""Returns player's W/L as a string."""
 		return self.player_stats['W/L']
 
-	def getPlayerKillDeath(self):
+	def get_player_kill_death(self):
 		"""Returns player's K/D as a string."""
 		return self.player_stats['K/D']
 
-	def getPlayerMeleeKills(self):
+	def get_player_melee_kills(self):
 		"""Returns player's melee kills as a string."""
 		return self.player_stats['Melee Kills']
 
 	#OPERATOR GETTERS
 
-	def getOperatorTimePlayed(self, operator_name):
+	def get_operator_time_played(self, operator_name):
 		"""Returns player's time played for the given operator as a string."""
 		op_name = operator_name.upper()
 		try:
@@ -140,7 +140,7 @@ class Player:
 		except ValueError:
 			print(f'{op_name} is not a valid operator, maybe you misspelled the name')
 
-	def getOperatorWinLoss(self, operator_name):
+	def get_operator_win_loss(self, operator_name):
 		"""Returns player's W/L for the given operator as a string."""
 		op_name = operator_name.upper()
 		try:
@@ -148,7 +148,7 @@ class Player:
 		except ValueError:
 			print(f'{op_name} is not a valid operator, maybe you misspelled the name')
 
-	def getOperatorKillDeath(self, operator_name):
+	def get_operator_kill_death(self, operator_name):
 		"""Returns player's K/D for the given operator as a string."""
 		op_name = operator_name.upper()
 		try:
