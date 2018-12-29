@@ -35,23 +35,21 @@ def main():
 def pull_user_data_from_shelve():
     """Checks if the shelve exists and copies login_info, user_links, and favorite_players into their respective session dictionaries"""
     if os.path.isfile('User_Info.dat'):
-        user_info = shelve.open('User_Info')
-        login_info['email'] =  user_info['login_info']['email']
-        login_info['pwd'] =   user_info['login_info']['pwd']
-        copy_dict_from_shelve()
-        user_info.close()
+        with shelve.open('User_Info') as db:
+            login_info['email'] =  db['login_info']['email']
+            login_info['pwd'] =   db['login_info']['pwd']
+            copy_dict_from_shelve()
     else:
         run_first_time_welcome()
-        user_info = shelve.open('User_Info', writeback = True)
-        user_email = input('Ubisoft account email: ')
-        user_pwd = input('Ubisoft account password: ')
-        user_info['login_info'] = {'email' : user_email, 'pwd' : user_pwd}
-        user_info['user_links'] = {}
-        user_info['favorite_players'] = {}
-        
-        login_info['email'] =  user_info['login_info']['email']
-        login_info['pwd'] =   user_info['login_info']['pwd']
-        user_info.close()
+        with shelve.open('User_Info', writeback = True) as db:
+            user_email = input('Ubisoft account email: ')
+            user_pwd = input('Ubisoft account password: ')
+            db['login_info'] = {'email' : user_email, 'pwd' : user_pwd}
+            db['user_links'] = {}
+            db['favorite_players'] = {}
+            
+            login_info['email'] =  db['login_info']['email']
+            login_info['pwd'] =   db['login_info']['pwd']
 
 
 def run_first_time_welcome():
@@ -64,12 +62,11 @@ def run_first_time_welcome():
 
 def copy_dict_from_shelve():
     """Copies user links and favorites links from shelve into user_links and favorite_players session dictionaries respectively.""" 
-    user_info = shelve.open('User_Info')
-    for key in user_info['user_links']:
-        user_links[key] = user_info['user_links'][key]
-    for key in user_info['favorite_players']:
-        favorite_players[key] = user_info['favorite_players'][key]
-    user_info.close()
+    with shelve.open('User_Info') as db:
+        for key in db['user_links']:
+            user_links[key] = db['user_links'][key]
+        for key in db['favorite_players']:
+            favorite_players[key] = db['favorite_players'][key]
 
 
 def is_already_scraped(name):
@@ -109,10 +106,9 @@ def add_player_to_favorites(name):
     name = name.upper()
 
     if name in user_links:
-        user_info = shelve.open('User_Info', writeback = True)
-        favorite_players[name] = user_links[name]
-        user_info['favorite_players'][name] = user_links[name]
-        user_info.close()
+        with shelve.open('User_Info', writeback = True) as db:
+            favorite_players[name] = user_links[name]
+            db['favorite_players'][name] = user_links[name]
     else:
         print(f'{name} is not saved in your list of players')
 
@@ -136,19 +132,18 @@ def list_favorites():
 
 def add_player_url():
     """Adds a player to the user_links dictionary and shelve, prompts for user input for player name and ubisoft link."""
-    user_info = shelve.open('User_Info', writeback = True)
-    #The name will be made all uppercase in the end as to avoid confusion when searching for a name
-    player_name = input('Enter a name for the new player(NOT CASE SENSITIVE): ')
-    player_url = input('Copy and paste the player\'s url here (search for their Ubisoft username \nand copy the FULL url from this site https://game-rainbow6.ubi.com/en-us/home): ')
-    player_name = player_name.upper()
+    with shelve.open('User_Info', writeback = True) as db:
+        #The name will be made all uppercase in the end as to avoid confusion when searching for a name
+        player_name = input('Enter a name for the new player(NOT CASE SENSITIVE): ')
+        player_url = input('Copy and paste the player\'s url here (search for their Ubisoft username \nand copy the FULL url from this site https://game-rainbow6.ubi.com/en-us/home): ')
+        player_name = player_name.upper()
 
-    #add player URL and name to shelf and session dictionary
-    if player_name in user_links:
-        print(f'{player_name} is already in your list of players, make sure you are not adding a duplicate or try another name')
-    else:
-        user_info['user_links'][player_name] = player_url
-        user_links[player_name] = player_url
-    user_info.close()
+        #add player URL and name to shelf and session dictionary
+        if player_name in user_links:
+            print(f'{player_name} is already in your list of players, make sure you are not adding a duplicate or try another name')
+        else:
+            db['user_links'][player_name] = player_url
+            user_links[player_name] = player_url
 
 
 def display_player_stats(name):
