@@ -4,6 +4,7 @@ from Player import Player
 
 #Global Variables
 login_info = {}
+#holds player names and links to their ubisoft stats page
 user_links = {}
 #favorite players will be scraped on launch so that you can call these players stats without waiting early on
 favorite_players = {}
@@ -13,6 +14,7 @@ favorite_players = {}
 scraped_players = {}
 
 def main():
+
     pull_user_data_from_shelve()
     scrape_favorites()
 
