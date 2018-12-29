@@ -32,6 +32,7 @@ def main():
             function_dictionary[command[0].upper()](command[1],command[2],command[3])
 
 def pullUserDataFromShelf():
+    """Checks if the shelve exists and copies login_info, user_links, and favorite_players into their respective session dictionaries"""
     if os.path.isfile('User_Info.dat'):
         user_info = shelve.open('User_Info')
         login_info['email'] =  user_info['login_info']['email']
@@ -51,15 +52,16 @@ def pullUserDataFromShelf():
         login_info['pwd'] =   user_info['login_info']['pwd']
         user_info.close()
 
-#first time set up/ welcome message 
 def runFirstTimeWelcome():
+    """Displays the first time set up text."""
     s = ('Welcome to Rainbow Six Compare, an easy way to see who among your friends is truly the best at Rainbow Six Siege\n'
          'You will need to input your Ubisoft email and password so that the program can fetch stats from Rainbow Six Siege Stats\n'
          '(Don\'t worry they get saved locally on your machine they won\'t get leaked)')
     print(s)
 
-#copy the user links from the shelf into the user_links dictionary
+
 def copyDictFromShelf():
+    """Copies user links and favorites links from shelve into user_links and favorite_players session dictionaries respectively.""" 
     user_info = shelve.open('User_Info')
     for key in user_info['user_links']:
         user_links[key] = user_info['user_links'][key]
@@ -67,8 +69,13 @@ def copyDictFromShelf():
         favorite_players[key] = user_info['favorite_players'][key]
     user_info.close()
 
-#checks if a player has already been scraped this session
 def isAlreadyScraped(name):
+    """Checks if the given player has already been scraped and therefore is already in the dictionary of players for this session, scraped_players.
+    else it will create a new player object.
+
+    Keyword arguments:
+    name -- the key of a user in the user_links dictionary
+    """ 
     #if the name is already in scraped players then the stats are already stored this session and there is no need to make a new player object
     if name in scraped_players:
         return scraped_players[name]
@@ -80,16 +87,20 @@ def isAlreadyScraped(name):
         return player
 
     else:
-        print('{} is not saved in your list of players'.format(name))
+        print(f'{name} is not saved in your list of players')
         return None
 
-#list the names of all players in the user_links dictionary
 def listPlayers():
+    """Prints out the keys(names of players ready to be scraped) in the user_links dictionary."""
     for key in user_links:
         print(key)
 
-#adds player to favorites to be scraped on launch
 def addPlayerToFavorites(name):
+    """Adds a player to the favorite_players dictionary and shelve.The players' stats in favorite_players are scraped on launch.
+
+    Keyword arguments:
+    name -- the key of a user in the user_links dictionary
+    """
     name = name.upper()
 
     if name in user_links:
@@ -98,37 +109,47 @@ def addPlayerToFavorites(name):
         user_info['favorite_players'][name] = user_links[name]
         user_info.close()
     else:
-        print('{} is not saved in your list of players'.format(name))
+        print(f'{name} is not saved in your list of players')
 
-#scrapes the favorites list and stores them in the scraped players dictionary for this session
 def scrapeFavorites():
+    """Scrapes the stats of all players in the favorite_players dictionary, creating a player object for each and storing them in the scraped_players dictionary.
+
+    WARNING:
+    This essentially frontloads all the waiting of scraping players. You have to wait for all favorited players to be scraped before you can interact with the program.
+    Be careful if you have a large favorite_players dictionary.
+    """
     for key,value in favorite_players.items():
         scraped_players[key] = Player(value, login_info)
 
-#list the names of all players in the favorites dictionary
 def listFavorites():
+    """Prints out all keys(names of players) in the favorite_players dictionary.""" 
     for key in favorite_players:
         print(key)
 
-#add a player to the user_links dictionary
 def addPlayerURL():
+    """Adds a player to the user_links dictionary and shelve, prompts for user input for player name and ubisoft link."""
     user_info = shelve.open('User_Info', writeback = True)
     #The name will be made all uppercase in the end as to avoid confusion when searching for a name
     player_name = input('Enter a name for the new player(NOT CASE SENSITIVE): ')
-    player_url = input('Copy and paste the player\'s url here (search for their Ubisfot username \nand copy the FULL url from this site https://game-rainbow6.ubi.com/en-us/home): ')
+    player_url = input('Copy and paste the player\'s url here (search for their Ubisoft username \nand copy the FULL url from this site https://game-rainbow6.ubi.com/en-us/home): ')
     player_name = player_name.upper()
 
     #add player URL and name to shelf and session dictionary
     if player_name in user_links:
-        print('{} is already in your list of players, make sure you are not adding a duplicate or try another name'.format(player_name))
+        print(f'{player_name} is already in your list of players, make sure you are not adding a duplicate or try another name')
     else:
         user_info['user_links'][player_name] = player_url
         user_links[player_name] = player_url
     user_info.close()
 
-#displays the general player stats
 def displayPlayerStats(name):
+    """Prints out the general stats(Rank,Time Played,K/D,W/L, Headshot %) for a given player.
 
+    Keyword arguments:
+    name -- a key in either scraped_players(player object for this name already exists) or user_links(player object needs to be created)
+    """
+    #check if the given olayer has already been scraped and therefore has a player object in the scraped_players dictionary
+    #else make a new player object for this player and add it to the scraped_players dictionary
     player = isAlreadyScraped(name.upper())
 
     if player != None:
@@ -146,7 +167,12 @@ def displayPlayerStats(name):
         print(s)
 
 def displayOperatorStats(player_name, operator_name):
+    """Prints out a given player's stats for a given operator(Time Played, K/D,W/L).
 
+    Keyword arguments:
+    player_name -- Key in either scraped_players(player object already exists) or user_links(player object needs to be created) for given player
+    operator_name -- Name of operator whose stats we want to display, should be a key in the player object's operator_stats dicionary(getters catch this error)
+    """ 
     player_name = player_name.upper()
     operator_name = operator_name.upper()
     player = isAlreadyScraped(player_name)
@@ -160,6 +186,12 @@ def displayOperatorStats(player_name, operator_name):
         print(s)
 
 def comparePlayers(player_1_name, player_2_name):
+    """Prints two given players' general stats(Rank, Time Played, W/L, K/D, Headshot %, Melee kills) side by side for comparison.
+
+    Keyword arguments:
+    player_1_name -- Key in either scraped_players(player object already exists) or user_links(player object needs to be created) for given player
+    player_2_name -- Key in either scraped_players(player object already exists) or user_links(player object needs to be created) for given player
+    """
     #load player stats from the dictionary or scrape the players stats if they haven't already been scraped
     player_1 = isAlreadyScraped(player_1_name)
     player_2 = isAlreadyScraped(player_2_name)
@@ -178,6 +210,13 @@ def comparePlayers(player_1_name, player_2_name):
     print(s)
 
 def compareOperators(player_1_name, player_2_name, operator):
+    """Prints two given players' stats for the given operator(Time Played, W/L, K/D) side by side for comparison.
+
+    Keyword arguments:
+    player_1_name -- Key in either scraped_players(player object already exists) or user_links(player object needs to be created) for given player
+    player_2_name -- Key in either scraped_players(player object already exists) or user_links(player object needs to be created) for given player
+    operator -- Name of operator whose stats we want to display, should be a key in the player object's operator_stats dicionary(getters catch this error)
+    """
     operator = operator.upper()
     #load player stats from the dictionary or scrape the players stats if they haven't already been scraped
     player_1 = isAlreadyScraped(player_1_name)
@@ -191,6 +230,7 @@ def compareOperators(player_1_name, player_2_name, operator):
     print(s)
 
 def commandHelp():
+    """Prints all possible commands and their neccesary arguments as well as a description about what each command does"""
     s = ('Commands and arguments are not case senesitive\n'
          'make sure you have spaces between arguments and commands\n'
          'Commands:\n'
