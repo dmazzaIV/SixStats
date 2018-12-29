@@ -133,22 +133,22 @@ class Player:
 		op_name = operator_name.upper()
 		try:
 			return self.operator_stats[op_name]['Time Played']
-		except:
-			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
+		except ValueError:
+			print('{} is not a valid operator, maybe you misspelled the name'.format(op_name))
 
 	#stored as a string returned as float
 	def getOperatorWinLoss(self, operator_name):
 		op_name = operator_name.upper()
 		try:
 			return self.operator_stats[op_name]['W/L']
-		except:
-			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
+		except ValueError:
+			print('{} is not a valid operator, maybe you misspelled the name'.format(op_name))
 
 	#stored as a string returned as a float
 	def getOperatorKillDeath(self, operator_name):
 		op_name = operator_name.upper()
 		try:
 			return self.operator_stats[op_name]['K/D']
-		except:
-			print(operator_name + ' is not a valid operator, maybe you misspelled the name')
+		except ValueError:
+			print('{} is not a valid operator, maybe you misspelled the name'.format(op_name))
 
