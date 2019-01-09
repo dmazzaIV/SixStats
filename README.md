@@ -5,5 +5,4 @@ Six Stats is a python based web scraping project that gets player statistics fro
 The idea for this project came from joking with friends about who was better at the game. As I had just learned the basics of web scraping from a school project I thought it would be fun to make a program that could "tell" us who was better.
 
 ## Code Style
-This code is written to follow the PEP 8 guidelines
-[code style:](https://www.python.org/dev/peps/pep-0008/)
+This code is written to follow the [PEP 8 guidelines](https://www.python.org/dev/peps/pep-0008/)
