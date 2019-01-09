@@ -6,4 +6,4 @@ The idea for this project came from joking with friends about who was better at 
 
 ## Code Style
 This code is written to follow the PEP 8 guidelines
-https://www.python.org/dev/peps/pep-0008/
+{https://www.python.org/dev/peps/pep-0008/}
