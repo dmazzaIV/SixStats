@@ -11,3 +11,11 @@ This code is written to follow the [PEP 8 guidelines](https://www.python.org/dev
 - Selenium
 - Chromedriver
 - Shelve
+
+## Instalation
+- Download [chromedriver](http://chromedriver.chromium.org/)
+- MAKE SURE TO ADD IT TO YOUR PATH
+- Install the Selenium library with "pip install selenium"
+
+## Use
+You should be able to just run the SixStats.exe and once you input your Ubisoft login information you can type "help"(not case sensative) for a list of commands to run
